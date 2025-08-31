@@ -26,6 +26,8 @@ export function Sidebar() {
       {/* Mobile toggle */}
       <div className="md:hidden p-3">
         <button
+          type="button"
+          aria-label={open ? "Close main menu" : "Open main menu"}
           aria-expanded={open}
           aria-controls="sidebar-nav"
           onClick={() => setOpen((v) => !v)}
@@ -53,8 +55,10 @@ export function Sidebar() {
                   <Link
                     href={item.href}
                     className={cn(
-                      "block rounded-md px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-white/40",
-                      active ? "bg-white/20 text-white" : "text-white/80 hover:bg-white/10 hover:text-white",
+                      "block rounded-md px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-white/40 border-l-2",
+                      active
+                        ? "bg-white/20 text-white border-white/70"
+                        : "text-white/80 hover:bg-white/10 hover:text-white border-transparent",
                     )}
                     aria-current={active ? "page" : undefined}
                   >
