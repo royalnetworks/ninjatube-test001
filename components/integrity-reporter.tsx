@@ -15,6 +15,18 @@ function getWebGLInfo() {
   }
 }
 
+function randomNonce() {
+  try {
+    const buf = new Uint8Array(12)
+    crypto.getRandomValues(buf)
+    return Array.from(buf)
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("")
+  } catch {
+    return String(Date.now())
+  }
+}
+
 export function IntegrityReporter() {
   useEffect(() => {
     const controller = new AbortController()
@@ -43,6 +55,18 @@ export function IntegrityReporter() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
+          signal: controller.signal,
+        })
+      } catch {
+        // swallow
+      }
+
+      // Call attestation stub for 'web' with a randomized nonce once per mount
+      try {
+        await fetch("/api/integrity/attestation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ platform: "web", nonce: randomNonce() }),
           signal: controller.signal,
         })
       } catch {
