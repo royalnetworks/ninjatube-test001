@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function hasAdminRole() {
+      return isSignedIn() && (request.auth.token.role in ['admin', 'manager', 'owner', 'founder']);
+    }
+
+    match /users/{uid} {
+      allow read: if true;
+      // Allow user to update limited profile fields only
+      allow update: if isOwner(uid) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'name', 'bio', 'avatarUrl', 'bannerUrl', 'updatedAt'
+        ]);
+      allow create: if isOwner(uid);
+      allow delete: if false;
+    }
+
+    match /wallets/{uid} {
+      allow read: if isOwner(uid) || hasAdminRole();
+      // Server-only writes via Admin SDK. Clients cannot write.
+      allow write: if false;
+    }
+
+    match /transactions/{id} {
+      allow read: if isSignedIn() && resource.data.uid == request.auth.uid || hasAdminRole();
+      allow write: if false; // append-only by server
+    }
+
+    match /coupons/{code} {
+      allow read: if hasAdminRole();
+      allow write: if hasAdminRole();
+    }
+
+    match /ads/{id} {
+      allow read: if true; // fetched through server in production for targeting
+      allow write: if hasAdminRole();
+    }
+
+    match /users/{uid}/inventory/{itemId} {
+      allow read: if isOwner(uid) || hasAdminRole();
+      allow write: if false; // server grants items
+    }
+
+    match /users/{uid}/economy/{docId} {
+      allow read: if isOwner(uid) || hasAdminRole();
+      allow write: if false;
+    }
+
+    match /{document=**} {
+      // Deny everything else by default
+      allow read, write: if false;
+    }
+  }
+}
