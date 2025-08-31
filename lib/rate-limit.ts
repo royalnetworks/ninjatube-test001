@@ -38,3 +38,31 @@ export async function enforceRateLimit(
   map.set(key, bucket)
   return { ok: true }
 }
+
+type TakeOptions = { intervalMs: number; max: number }
+type TakeResult = { ok: true; remaining: number; reset: number } | { ok: false; remaining: number; reset: number }
+
+/**
+ * In-memory sliding-window rate limiter.
+ * Uses the same global map as enforceRateLimit to persist during preview.
+ */
+export const limiter = {
+  take(key: string, opts: TakeOptions): TakeResult {
+    const windowMs = Math.max(0, opts.intervalMs ?? 60_000)
+    const max = Math.max(1, opts.max ?? 1)
+    const now = Date.now()
+    const map = getMap()
+    const bucket = (map.get(key) || []).filter((t) => now - t < windowMs)
+
+    if (bucket.length >= max) {
+      const reset = bucket[0] + windowMs
+      return { ok: false, remaining: 0, reset }
+    }
+
+    bucket.push(now)
+    map.set(key, bucket)
+    const remaining = Math.max(0, max - bucket.length)
+    const reset = bucket[0]! + windowMs
+    return { ok: true, remaining, reset }
+  },
+}

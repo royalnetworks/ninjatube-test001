@@ -47,13 +47,13 @@ export function Sidebar() {
           </div>
           <ul className="flex flex-col gap-1">
             {navItems.map((item) => {
-              const active = pathname === item.href
+              const active = pathname === item.href || pathname.startsWith(item.href + "/")
               return (
                 <li key={item.href}>
                   <Link
                     href={item.href}
                     className={cn(
-                      "block rounded-md px-3 py-2 text-sm transition-colors",
+                      "block rounded-md px-3 py-2 text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-white/40",
                       active ? "bg-white/20 text-white" : "text-white/80 hover:bg-white/10 hover:text-white",
                     )}
                     aria-current={active ? "page" : undefined}

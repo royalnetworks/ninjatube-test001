@@ -48,6 +48,16 @@ export function WatchEarn() {
     setRunning(true)
   }
 
+  function togglePause() {
+    setRunning((r) => !r)
+  }
+
+  function resetSession() {
+    setRunning(false)
+    setSeconds(0)
+    setClaimed(false)
+  }
+
   async function claimReward() {
     if (!canClaim || !videoId) return
     setClaiming(true)
@@ -111,6 +121,24 @@ export function WatchEarn() {
           <div className="mt-4 flex flex-wrap items-center gap-3">
             <span className="rounded-md bg-white/10 px-2 py-1 text-sm text-white/90">Watched: {seconds}s</span>
             <span className="rounded-md bg-white/10 px-2 py-1 text-sm text-white/90">Demo Coins: {coins}</span>
+            <button
+              type="button"
+              onClick={togglePause}
+              className={cn(
+                "rounded-md px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-white/40",
+                running ? "bg-white/20 text-white hover:bg-white/30" : "bg-purple-600 text-white hover:bg-purple-700",
+              )}
+              aria-pressed={running}
+            >
+              {running ? "Pause" : "Resume"}
+            </button>
+            <button
+              type="button"
+              onClick={resetSession}
+              className="rounded-md px-3 py-2 text-sm font-medium bg-white/10 text-white hover:bg-white/20 focus:outline-none focus:ring-2 focus:ring-white/40"
+            >
+              Reset
+            </button>
             <button
               disabled={!canClaim || claiming}
               onClick={claimReward}

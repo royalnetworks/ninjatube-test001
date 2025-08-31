@@ -8,6 +8,7 @@ import { IntegrityReporter } from "@/components/integrity-reporter"
 import { Suspense } from "react"
 import { PresenceWidget } from "@/components/presence-widget"
 import { NotificationBanner } from "@/components/notification-banner"
+import { Sidebar } from "@/components/sidebar"
 
 export const metadata: Metadata = {
   title: "v0 App",
@@ -32,23 +33,12 @@ export default function RootLayout({
           </div>
           <IntegrityReporter />
           <main className="mx-auto max-w-7xl p-4">
-            <div className="flex gap-4">
-              {/* Sidebar */}
-              <div className="hidden md:block">
-                {/* The Sidebar component provides primary navigation */}
-                {/* If not already imported elsewhere, Next will resolve this import */}
-              </div>
-              <div className="md:w-60 lg:w-64 shrink-0 hidden md:block">
-                {/* Sidebar surface */}
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="w-full md:w-60 lg:w-64 md:shrink-0">
                 <div className="rounded-xl bg-white/10 backdrop-blur border border-white/20 p-0">
-                  {/* Render the sidebar navigation */}
-                  {/* We import where used below to keep this file concise */}
-                  {/* @ts-expect-error - TS may complain about server/client boundary, but it will bundle fine */}
-                  {require("@/components/sidebar").Sidebar()}
+                  <Sidebar />
                 </div>
               </div>
-
-              {/* Content surface */}
               <div className="flex-1">
                 <div className="rounded-xl bg-white/80 text-slate-900 shadow-lg ring-1 ring-white/30 backdrop-blur">
                   {children}
@@ -56,7 +46,6 @@ export default function RootLayout({
               </div>
             </div>
           </main>
-          {/* End shell */}
         </Suspense>
       </body>
     </html>
