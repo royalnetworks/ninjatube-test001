@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
+import { DarkModeToggle } from "@/components/dark-mode-toggle"
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -68,6 +69,10 @@ export function Sidebar() {
               )
             })}
           </ul>
+          {/* Sidebar footer with theme toggle */}
+          <div className="mt-4 border-t border-white/20 pt-3">
+            <DarkModeToggle />
+          </div>
         </div>
       </nav>
     </aside>
